@@ -3,8 +3,8 @@ package com.orderbook.domain;
 import com.orderbook.QuoteGenerator;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -96,17 +96,17 @@ public class OrderBook implements Runnable{
 
     private void readFromFile() {
         try {
-            File file = new File(getClass().getClassLoader().getResource("exchange.txt").getFile());
-            BufferedReader reader = new BufferedReader(new FileReader(file));
-            String line;
-            while ((line = reader.readLine())!= null)
-            {
-                insertQuote(line);
-                Thread.sleep(new Random().nextLong(10,500));
+            InputStream inputStream = getClass().getClassLoader().getResourceAsStream("exchange.txt");
+            try (BufferedReader br
+                         = new BufferedReader(new InputStreamReader(inputStream))) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    insertQuote(line);
+                }
             }
-            reader.close();
+            inputStream.close();
         } catch (Exception ex) {
-            System.out.println(ex);
+            System.out.println(ex.getMessage());
         }
     }
 }
